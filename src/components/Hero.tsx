@@ -11,13 +11,11 @@ import {
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { HERO_PHOTOS, photos } from "@/lib/photos";
+import { useIsMobile } from "@/lib/useIsMobile";
 
-// Cada card tem posição (x,y), profundidade z, rotação e tamanho próprios.
-// Quanto mais negativo o z, mais ao "fundo" — menos reage ao mouse.
-// Tamanhos diferentes para mobile/desktop (clamp).
 const CARDS = [
   {
-    photo: HERO_PHOTOS[0], // piscina noite
+    photo: HERO_PHOTOS[0],
     x: "-22%",
     y: "-18%",
     z: -180,
@@ -28,7 +26,7 @@ const CARDS = [
     mobileHide: false,
   },
   {
-    photo: HERO_PHOTOS[1], // arco floral
+    photo: HERO_PHOTOS[1],
     x: "26%",
     y: "-22%",
     z: -60,
@@ -36,10 +34,10 @@ const CARDS = [
     w: "clamp(120px, 22vw, 320px)",
     h: "clamp(170px, 30vw, 440px)",
     parallax: 0.55,
-    mobileHide: true, // esconde no mobile p/ não poluir
+    mobileHide: true,
   },
   {
-    photo: HERO_PHOTOS[2], // mesa terraço
+    photo: HERO_PHOTOS[2],
     x: "-28%",
     y: "20%",
     z: -100,
@@ -50,7 +48,7 @@ const CARDS = [
     mobileHide: true,
   },
   {
-    photo: HERO_PHOTOS[3], // vaso flores
+    photo: HERO_PHOTOS[3],
     x: "28%",
     y: "22%",
     z: -40,
@@ -61,7 +59,7 @@ const CARDS = [
     mobileHide: false,
   },
   {
-    photo: photos[16], // mesa redonda terraço (extra do fundo)
+    photo: photos[16],
     x: "0%",
     y: "0%",
     z: -300,
@@ -76,19 +74,17 @@ const CARDS = [
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
-  // Mouse tracking
+  // Mouse/touch tracking (hooks sempre chamados)
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  // Suaviza com spring
   const sx = useSpring(mx, { stiffness: 60, damping: 18, mass: 0.6 });
   const sy = useSpring(my, { stiffness: 60, damping: 18, mass: 0.6 });
 
-  // Tilt geral do palco (rotação leve baseada no mouse)
   const stageRotY = useTransform(sx, [-1, 1], [10, -10]);
   const stageRotX = useTransform(sy, [-1, 1], [-7, 7]);
 
-  // Scroll
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -101,85 +97,84 @@ export default function Hero() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // No mobile não há mouse — apenas scroll nativo, sem parallax por toque
+    if (isMobile) return;
 
     const onMove = (e: MouseEvent) => {
       const el = stageRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      // Normaliza -1..1
       const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
       const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
       mx.set(Math.max(-1, Math.min(1, nx)));
       my.set(Math.max(-1, Math.min(1, ny)));
     };
-    const onLeave = () => {
-      mx.set(0);
-      my.set(0);
-    };
-    const onTouch = (e: TouchEvent) => {
-      const t = e.touches[0];
-      if (!t) return;
-      const el = stageRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const nx = ((t.clientX - rect.left) / rect.width - 0.5) * 2;
-      const ny = ((t.clientY - rect.top) / rect.height - 0.5) * 2;
-      mx.set(nx);
-      my.set(ny);
-    };
+    const onLeave = () => { mx.set(0); my.set(0); };
+
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
-    window.addEventListener("touchmove", onTouch, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("touchmove", onTouch);
     };
-  }, [mx, my]);
+  }, [mx, my, isMobile]);
 
   return (
     <section
       ref={ref}
       id="top"
       className="relative w-full h-[100svh] min-h-[680px] overflow-hidden bg-ink isolate"
-      style={{ perspective: 1400 }}
+      style={{ perspective: isMobile ? undefined : 1400 }}
     >
-      {/* Background gradiente quente */}
       <div className="absolute inset-0 bg-gradient-radial from-[#3a2a17] via-ink to-[#1a120a]" />
 
-      {/* Halos pulsantes */}
+      {/* Halos — pulsam apenas no desktop */}
       <motion.div
-        animate={{ opacity: [0.3, 0.55, 0.3], scale: [1, 1.15, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        animate={
+          isMobile
+            ? { opacity: 0.4, scale: 1 }
+            : { opacity: [0.3, 0.55, 0.3], scale: [1, 1.15, 1] }
+        }
+        transition={
+          isMobile
+            ? { duration: 0 }
+            : { duration: 8, repeat: Infinity, ease: "easeInOut" }
+        }
         className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/30 blur-[140px] pointer-events-none"
       />
       <motion.div
-        animate={{ opacity: [0.15, 0.3, 0.15] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        animate={
+          isMobile
+            ? { opacity: 0.2 }
+            : { opacity: [0.15, 0.3, 0.15] }
+        }
+        transition={
+          isMobile
+            ? { duration: 0 }
+            : { duration: 6, repeat: Infinity, ease: "easeInOut" }
+        }
         className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-primary-dark/40 blur-[100px] pointer-events-none"
       />
 
-      {/* Palco 3D — perspectiva e rotação geral */}
+      {/* Palco — 3D e parallax apenas no desktop */}
       <motion.div
         ref={stageRef}
         style={{
-          rotateY: stageRotY,
-          rotateX: stageRotX,
-          scale: stageScale,
-          z: stageZ,
-          transformStyle: "preserve-3d",
+          rotateY: isMobile ? 0 : stageRotY,
+          rotateX: isMobile ? 0 : stageRotX,
+          scale: isMobile ? undefined : stageScale,
+          z: isMobile ? undefined : stageZ,
+          transformStyle: isMobile ? undefined : "preserve-3d",
         }}
         className="absolute inset-0 flex items-center justify-center will-change-transform"
       >
         {CARDS.map((card, i) => (
-          <Card3D key={i} card={card} mx={sx} my={sy} index={i} />
+          <Card3D key={i} card={card} mx={sx} my={sy} index={i} isMobile={isMobile} />
         ))}
       </motion.div>
 
-      {/* Vinheta */}
       <div className="absolute inset-0 bg-gradient-to-b from-ink/40 via-transparent to-ink/85 pointer-events-none" />
 
-      {/* Conteúdo central — flutua acima das cards */}
       <motion.div
         style={{ opacity, y: yContent }}
         className="relative z-20 h-full flex flex-col items-center justify-center text-center px-6 pointer-events-none"
@@ -194,9 +189,9 @@ export default function Hero() {
         </motion.span>
 
         <motion.h1
-          initial={{ opacity: 0, y: 30, rotateX: 20 }}
+          initial={{ opacity: 0, y: 30, rotateX: isMobile ? 0 : 20 }}
           animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 1.4, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: isMobile ? 0.8 : 1.4, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="font-serif text-white text-5xl sm:text-7xl md:text-[5.5rem] lg:text-[6.5rem] leading-[0.95] font-light text-balance max-w-5xl"
           style={{
             textShadow:
@@ -253,7 +248,7 @@ export default function Hero() {
         </motion.p>
       </motion.div>
 
-      {/* Scroll cue */}
+      {/* Scroll cue — mantido no mobile mas sem bounce */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -261,8 +256,12 @@ export default function Hero() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={isMobile ? { y: 0 } : { y: [0, 10, 0] }}
+          transition={
+            isMobile
+              ? { duration: 0 }
+              : { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          }
           className="w-[1px] h-16 bg-gradient-to-b from-transparent via-white/70 to-transparent"
         />
       </motion.div>
@@ -270,79 +269,90 @@ export default function Hero() {
   );
 }
 
-// Card 3D individual com profundidade própria
 function Card3D({
   card,
   mx,
   my,
   index,
+  isMobile,
 }: {
   card: (typeof CARDS)[number];
   mx: MotionValue<number>;
   my: MotionValue<number>;
   index: number;
+  isMobile: boolean;
 }) {
-  // Quanto mais à frente (z mais alto), mais reage ao mouse
   const factor = card.parallax * 60;
   const offsetX = useTransform(mx, [-1, 1], [-factor, factor]);
   const offsetY = useTransform(my, [-1, 1], [-factor * 0.6, factor * 0.6]);
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.7, rotateY: card.rot * 3 }}
+      initial={{ opacity: 0, scale: 0.7, rotateY: isMobile ? 0 : card.rot * 3 }}
       animate={{ opacity: 1, scale: 1, rotateY: card.rot }}
       transition={{
-        duration: 1.4,
+        duration: isMobile ? 0.7 : 1.4,
         delay: 0.2 + index * 0.18,
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{
-        scale: 1.06,
-        z: card.z + 80,
-        transition: { duration: 0.5, ease: "easeOut" },
-      }}
+      // Hover apenas no desktop (touch não tem hover)
+      whileHover={
+        isMobile
+          ? undefined
+          : { scale: 1.06, z: card.z + 80, transition: { duration: 0.5, ease: "easeOut" } }
+      }
       style={{
         position: "absolute",
         left: `calc(50% + ${card.x})`,
         top: `calc(50% + ${card.y})`,
         translateX: "-50%",
         translateY: "-50%",
-        z: card.z,
+        z: isMobile ? undefined : card.z,
         rotate: `${card.rot}deg`,
-        x: offsetX,
-        y: offsetY,
+        // Parallax por mouse — desativado no mobile
+        x: isMobile ? undefined : offsetX,
+        y: isMobile ? undefined : offsetY,
         width: card.w,
         height: card.h,
-        transformStyle: "preserve-3d",
+        transformStyle: isMobile ? undefined : "preserve-3d",
       }}
       className={`rounded-2xl overflow-hidden shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85)] cursor-pointer pointer-events-auto group ${
         card.mobileHide ? "hidden sm:block" : ""
       }`}
     >
-      {/* Ken-burns */}
-      <motion.div
-        animate={{
-          scale: [1, 1.08, 1],
-        }}
-        transition={{
-          duration: 14 + index * 2,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute inset-0"
-      >
-        <Image
-          src={card.photo.src}
-          alt={card.photo.alt}
-          fill
-          priority={index === 0 || index === 4}
-          sizes="(max-width: 768px) 50vw, 30vw"
-          className="object-cover"
-        />
-      </motion.div>
-      {/* Brilho na borda */}
+      {/* Ken-burns — apenas no desktop (muito pesado no mobile) */}
+      {isMobile ? (
+        <div className="absolute inset-0">
+          <Image
+            src={card.photo.src}
+            alt={card.photo.alt}
+            fill
+            priority={index === 0 || index === 4}
+            sizes="(max-width: 768px) 50vw, 30vw"
+            className="object-cover"
+          />
+        </div>
+      ) : (
+        <motion.div
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{
+            duration: 14 + index * 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={card.photo.src}
+            alt={card.photo.alt}
+            fill
+            priority={index === 0 || index === 4}
+            sizes="(max-width: 768px) 50vw, 30vw"
+            className="object-cover"
+          />
+        </motion.div>
+      )}
       <div className="absolute inset-0 ring-1 ring-white/15 rounded-2xl pointer-events-none" />
-      {/* Reflexo dourado no hover */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-primary/0 to-primary-light/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
     </motion.div>
   );

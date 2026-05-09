@@ -6,16 +6,19 @@ import Image from "next/image";
 import { GALLERY_PHOTOS } from "@/lib/photos";
 import SectionHeading from "./SectionHeading";
 import { FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function Gallery() {
   const [lightbox, setLightbox] = useState<number | null>(null);
   const ref = useRef<HTMLElement>(null);
+  const isMobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
 
+  // Parallax calculado sempre (regras dos hooks), aplicado só no desktop
   const yA = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const yB = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
   const yC = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
@@ -36,7 +39,7 @@ export default function Gallery() {
         {/* Grid masonry com parallax — todas as fotos juntas */}
         <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
           {GALLERY_PHOTOS.map((p, i) => {
-            const y = i % 3 === 0 ? yA : i % 3 === 1 ? yB : yC;
+            const y = isMobile ? undefined : (i % 3 === 0 ? yA : i % 3 === 1 ? yB : yC);
             const tall = i % 5 === 0 || i % 5 === 3;
             return (
               <motion.button
@@ -51,7 +54,7 @@ export default function Gallery() {
                   delay: (i % 6) * 0.06,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                whileHover={{ scale: 1.025 }}
+                whileHover={isMobile ? undefined : { scale: 1.025 }}
                 className={`relative group overflow-hidden rounded-2xl bg-cream shadow-sm hover:shadow-xl transition-shadow ${
                   tall ? "row-span-2 aspect-[3/4]" : "aspect-square"
                 }`}

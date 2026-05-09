@@ -4,23 +4,29 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
 import { photos } from "@/lib/photos";
+import { useIsMobile } from "@/lib/useIsMobile";
 
-// Foto principal: saída do casal nas escadas com pétalas (foto-10)
-// Foto complementar: beijo sob arco à noite (foto-22)
 const MAIN_PHOTO = photos[9];
 const SECONDARY_PHOTO = photos[21];
 
 export default function TheMoment() {
   const ref = useRef<HTMLElement>(null);
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
 
-  const yMain = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"]);
-  const ySecondary = useTransform(scrollYProgress, [0, 1], ["18%", "-18%"]);
-  const yText = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
-  const scaleMain = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05]);
+  // Hooks sempre chamados; no mobile passamos undefined para desativar o parallax
+  const yMainRaw = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"]);
+  const ySecondaryRaw = useTransform(scrollYProgress, [0, 1], ["18%", "-18%"]);
+  const yTextRaw = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  const scaleMainRaw = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05]);
+
+  const yMain = isMobile ? undefined : yMainRaw;
+  const ySecondary = isMobile ? undefined : ySecondaryRaw;
+  const yText = isMobile ? undefined : yTextRaw;
+  const scaleMain = isMobile ? undefined : scaleMainRaw;
 
   return (
     <section

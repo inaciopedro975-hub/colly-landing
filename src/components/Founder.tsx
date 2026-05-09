@@ -6,15 +6,19 @@ import Image from "next/image";
 import { FOUNDER_PHOTO, photos } from "@/lib/photos";
 import SectionHeading from "./SectionHeading";
 import PolaroidStack from "./PolaroidStack";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export default function Founder() {
   const ref = useRef<HTMLElement>(null);
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const yPhoto = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
-  const yQuote = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
+  const yPhotoRaw = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  const yQuoteRaw = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
+  const yPhoto = isMobile ? undefined : yPhotoRaw;
+  const yQuote = isMobile ? undefined : yQuoteRaw;
 
   return (
     <section

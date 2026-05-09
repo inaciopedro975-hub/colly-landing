@@ -5,6 +5,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import SectionHeading from "./SectionHeading";
 import { photos } from "@/lib/photos";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 // Layout editorial clássico: cada diferencial é uma "entrada" tipográfica
 // com numeral romano serif e foto associada (alternando lado).
@@ -100,11 +101,13 @@ function EditorialRow({
   index: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const yRaw = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const y = isMobile ? undefined : yRaw;
   const reverse = index % 2 === 1;
 
   return (
