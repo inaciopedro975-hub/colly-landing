@@ -10,6 +10,8 @@ export default function LenisProvider({
 }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Desativa Lenis no mobile — scroll nativo é muito mais performático
+    if (window.innerWidth < 768) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const lenis = new Lenis({
@@ -26,11 +28,4 @@ export default function LenisProvider({
     }
     rafId = requestAnimationFrame(raf);
 
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
-
-  return <>{children}</>;
-}
+    
