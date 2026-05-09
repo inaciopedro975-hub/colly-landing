@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+:root {
+  /* Paleta Colly */
+  --color-primary: #d48226;
+  --color-primary-dark: #b86d18;
+  --color-primary-light: #e9a25a;
+  --color-cream: #faf6ee;
+  --color-beige: #ede2cf;
+  --color-beige-deep: #d9c8a8;
+  --color-ink: #2a1f12;
+  --color-ink-soft: #5a4a35;
+  --color-muted: #8a7861;
+  --color-line: #e5d8bf;
+  --background: #ffffff;
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-primary-light: var(--color-primary-light);
+  --color-cream: var(--color-cream);
+  --color-beige: var(--color-beige);
+  --color-beige-deep: var(--color-beige-deep);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-muted: var(--color-muted);
+  --color-line: var(--color-line);
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+  --font-script: var(--font-pinyon);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Utilitários customizados */
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-cormorant), ui-serif, Georgia, serif;
+  }
+  .font-script {
+    font-family: var(--font-pinyon), "Pinyon Script", cursive;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .bg-radial-cream {
+    background-image: radial-gradient(
+      ellipse at center,
+      var(--color-cream) 0%,
+      #ffffff 70%
+    );
+  }
+  .bg-gradient-radial {
+    background-image: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+  }
+  .ornament-line {
+    position: relative;
+  }
+  .ornament-line::before,
+  .ornament-line::after {
+    content: "";
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.5;
+    vertical-align: middle;
+    margin: 0 12px;
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Scrollbar dourada */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
