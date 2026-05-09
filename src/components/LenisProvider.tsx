@@ -28,4 +28,11 @@ export default function LenisProvider({
     }
     rafId = requestAnimationFrame(raf);
 
-    
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, []);
+
+  return <>{children}</>;
+}
