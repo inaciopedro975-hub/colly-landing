@@ -36,3 +36,10 @@ export const TOUR_360_PHOTOS = [
 
 // Galeria unificada — todas as fotos exceto a fundadora
 export const GALLERY_PHOTOS = photos.filter((_, i) => i !== 1);
+
+// Galeria mobile — 18 fotos: mantém todas usadas em outras seções
+// (Hero, Tour360, Diferenciais, TheMoment) + 5 fotos exclusivas da galeria
+// Remove somente fotos exclusivas de galeria: índices 10,13,15,17,18,20,22,24
+export const GALLERY_PHOTOS_MOBILE = photos.filter(
+  (_, i) => ![1, 10, 13, 15, 17, 18, 20, 22, 24].includes(i)
+);

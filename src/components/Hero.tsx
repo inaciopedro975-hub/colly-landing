@@ -286,72 +286,71 @@ function Card3D({
   const offsetX = useTransform(mx, [-1, 1], [-factor, factor]);
   const offsetY = useTransform(my, [-1, 1], [-factor * 0.6, factor * 0.6]);
 
+  if (isMobile) {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: `calc(50% + ${card.x})`,
+          top: `calc(50% + ${card.y})`,
+          transform: `translate(-50%, -50%) rotate(${card.rot}deg)`,
+          width: card.w,
+          height: card.h,
+        }}
+        className={`rounded-2xl overflow-hidden shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85)] ${
+          card.mobileHide ? "hidden sm:block" : ""
+        }`}
+      >
+        <Image
+          src={card.photo.src}
+          alt={card.photo.alt}
+          fill
+          priority={index === 0 || index === 4}
+          sizes="50vw"
+          className="object-cover"
+        />
+      </div>
+    );
+  }
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.7, rotateY: isMobile ? 0 : card.rot * 3 }}
+      initial={{ opacity: 0, scale: 0.7, rotateY: card.rot * 3 }}
       animate={{ opacity: 1, scale: 1, rotateY: card.rot }}
-      transition={{
-        duration: isMobile ? 0.7 : 1.4,
-        delay: 0.2 + index * 0.18,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      // Hover apenas no desktop (touch não tem hover)
-      whileHover={
-        isMobile
-          ? undefined
-          : { scale: 1.06, z: card.z + 80, transition: { duration: 0.5, ease: "easeOut" } }
-      }
+      transition={{ duration: 1.4, delay: 0.2 + index * 0.18, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ scale: 1.06, z: card.z + 80, transition: { duration: 0.5, ease: "easeOut" } }}
       style={{
         position: "absolute",
         left: `calc(50% + ${card.x})`,
         top: `calc(50% + ${card.y})`,
         translateX: "-50%",
         translateY: "-50%",
-        z: isMobile ? undefined : card.z,
+        z: card.z,
         rotate: `${card.rot}deg`,
-        // Parallax por mouse — desativado no mobile
-        x: isMobile ? undefined : offsetX,
-        y: isMobile ? undefined : offsetY,
+        x: offsetX,
+        y: offsetY,
         width: card.w,
         height: card.h,
-        transformStyle: isMobile ? undefined : "preserve-3d",
+        transformStyle: "preserve-3d",
       }}
       className={`rounded-2xl overflow-hidden shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85)] cursor-pointer pointer-events-auto group ${
         card.mobileHide ? "hidden sm:block" : ""
       }`}
     >
-      {/* Ken-burns — apenas no desktop (muito pesado no mobile) */}
-      {isMobile ? (
-        <div className="absolute inset-0">
-          <Image
-            src={card.photo.src}
-            alt={card.photo.alt}
-            fill
-            priority={index === 0 || index === 4}
-            sizes="(max-width: 768px) 50vw, 30vw"
-            className="object-cover"
-          />
-        </div>
-      ) : (
-        <motion.div
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{
-            duration: 14 + index * 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute inset-0"
-        >
-          <Image
-            src={card.photo.src}
-            alt={card.photo.alt}
-            fill
-            priority={index === 0 || index === 4}
-            sizes="(max-width: 768px) 50vw, 30vw"
-            className="object-cover"
-          />
-        </motion.div>
-      )}
+      <motion.div
+        animate={{ scale: [1, 1.08, 1] }}
+        transition={{ duration: 14 + index * 2, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0"
+      >
+        <Image
+          src={card.photo.src}
+          alt={card.photo.alt}
+          fill
+          priority={index === 0 || index === 4}
+          sizes="30vw"
+          className="object-cover"
+        />
+      </motion.div>
       <div className="absolute inset-0 ring-1 ring-white/15 rounded-2xl pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/0 via-primary/0 to-primary-light/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
     </motion.div>

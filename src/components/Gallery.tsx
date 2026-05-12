@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { GALLERY_PHOTOS } from "@/lib/photos";
+import { GALLERY_PHOTOS, GALLERY_PHOTOS_MOBILE } from "@/lib/photos";
 import SectionHeading from "./SectionHeading";
 import { FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useIsMobile } from "@/lib/useIsMobile";
@@ -13,15 +13,16 @@ export default function Gallery() {
   const ref = useRef<HTMLElement>(null);
   const isMobile = useIsMobile();
 
+  // Hooks sempre chamados (regra dos hooks)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
-
-  // Parallax calculado sempre (regras dos hooks), aplicado só no desktop
   const yA = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const yB = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
   const yC = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
+
+  const photoList = isMobile ? GALLERY_PHOTOS_MOBILE : GALLERY_PHOTOS;
 
   return (
     <section
@@ -36,11 +37,31 @@ export default function Gallery() {
           subtitle="Um passeio pelos eventos que aconteceram em nosso espaço — cada um único, cada um inesquecível."
         />
 
-        {/* Grid masonry com parallax — todas as fotos juntas */}
         <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-          {GALLERY_PHOTOS.map((p, i) => {
-            const y = isMobile ? undefined : (i % 3 === 0 ? yA : i % 3 === 1 ? yB : yC);
+          {photoList.map((p, i) => {
             const tall = i % 5 === 0 || i % 5 === 3;
+
+            if (isMobile) {
+              return (
+                <button
+                  key={p.src}
+                  onClick={() => setLightbox(i)}
+                  className={`relative overflow-hidden rounded-2xl bg-cream shadow-sm ${
+                    tall ? "row-span-2 aspect-[3/4]" : "aspect-square"
+                  }`}
+                >
+                  <Image
+                    src={p.src}
+                    alt={p.alt}
+                    fill
+                    sizes="50vw"
+                    className="object-cover"
+                  />
+                </button>
+              );
+            }
+
+            const y = i % 3 === 0 ? yA : i % 3 === 1 ? yB : yC;
             return (
               <motion.button
                 key={p.src}
@@ -54,7 +75,7 @@ export default function Gallery() {
                   delay: (i % 6) * 0.06,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                whileHover={isMobile ? undefined : { scale: 1.025 }}
+                whileHover={{ scale: 1.025 }}
                 className={`relative group overflow-hidden rounded-2xl bg-cream shadow-sm hover:shadow-xl transition-shadow ${
                   tall ? "row-span-2 aspect-[3/4]" : "aspect-square"
                 }`}
@@ -81,13 +102,13 @@ export default function Gallery() {
       {/* Lightbox */}
       {lightbox !== null && (
         <Lightbox
-          photos={GALLERY_PHOTOS}
+          photos={photoList}
           index={lightbox}
           onClose={() => setLightbox(null)}
           onNav={(dir) =>
             setLightbox((curr) => {
               if (curr === null) return curr;
-              return (curr + dir + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length;
+              return (curr + dir + photoList.length) % photoList.length;
             })
           }
         />
