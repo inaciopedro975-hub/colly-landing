@@ -8,28 +8,24 @@ import SectionHeading from "./SectionHeading";
 import { FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useIsMobile } from "@/lib/useIsMobile";
 
+const MOBILE_INITIAL = 12;
+
 export default function Gallery() {
   const [lightbox, setLightbox] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const ref = useRef<HTMLElement>(null);
   const isMobile = useIsMobile();
 
-  // Hooks sempre chamados (regra dos hooks)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const yA = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const yB = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
   const yC = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
 
-  const photoList = isMobile ? GALLERY_PHOTOS_MOBILE : GALLERY_PHOTOS;
+  const allPhotos = isMobile ? GALLERY_PHOTOS_MOBILE : GALLERY_PHOTOS;
+  const photoList = isMobile && !showAll ? allPhotos.slice(0, MOBILE_INITIAL) : allPhotos;
 
   return (
-    <section
-      ref={ref}
-      id="galeria"
-      className="relative py-28 md:py-36 bg-white overflow-hidden"
-    >
+    <section ref={ref} id="galeria" className="relative py-28 md:py-36 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <SectionHeading
           eyebrow="Momentos eternos"
@@ -54,6 +50,8 @@ export default function Gallery() {
                     src={p.src}
                     alt={p.alt}
                     fill
+                    placeholder="blur"
+                    blurDataURL={p.blurDataURL}
                     sizes="50vw"
                     className="object-cover"
                   />
@@ -70,11 +68,7 @@ export default function Gallery() {
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.8,
-                  delay: (i % 6) * 0.06,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+                transition={{ duration: 0.8, delay: (i % 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ scale: 1.025 }}
                 className={`relative group overflow-hidden rounded-2xl bg-cream shadow-sm hover:shadow-xl transition-shadow ${
                   tall ? "row-span-2 aspect-[3/4]" : "aspect-square"
@@ -84,22 +78,33 @@ export default function Gallery() {
                   src={p.src}
                   alt={p.alt}
                   fill
+                  placeholder="blur"
+                  blurDataURL={p.blurDataURL}
                   sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   className="object-cover transition-transform duration-[1.2s] group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-x-0 bottom-0 p-4 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <span className="text-white text-xs tracking-[0.3em] uppercase">
-                    Ver detalhes
-                  </span>
+                  <span className="text-white text-xs tracking-[0.3em] uppercase">Ver detalhes</span>
                 </div>
               </motion.button>
             );
           })}
         </div>
+
+        {/* Botão "Ver mais" no mobile */}
+        {isMobile && !showAll && allPhotos.length > MOBILE_INITIAL && (
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={() => setShowAll(true)}
+              className="px-8 py-3 rounded-full border border-primary text-primary font-semibold text-sm tracking-wide hover:bg-primary hover:text-white transition-all"
+            >
+              Ver todas as fotos ({allPhotos.length - MOBILE_INITIAL} restantes)
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Lightbox */}
       {lightbox !== null && (
         <Lightbox
           photos={photoList}
@@ -123,7 +128,7 @@ function Lightbox({
   onClose,
   onNav,
 }: {
-  photos: { src: string; alt: string }[];
+  photos: { src: string; alt: string; blurDataURL: string }[];
   index: number;
   onClose: () => void;
   onNav: (dir: number) => void;
@@ -146,20 +151,14 @@ function Lightbox({
       <button
         aria-label="Anterior"
         className="absolute left-4 md:left-10 w-12 h-12 rounded-full bg-white/10 hover:bg-primary text-white flex items-center justify-center transition"
-        onClick={(e) => {
-          e.stopPropagation();
-          onNav(-1);
-        }}
+        onClick={(e) => { e.stopPropagation(); onNav(-1); }}
       >
         <FiChevronLeft size={22} />
       </button>
       <button
         aria-label="Próxima"
         className="absolute right-4 md:right-10 w-12 h-12 rounded-full bg-white/10 hover:bg-primary text-white flex items-center justify-center transition"
-        onClick={(e) => {
-          e.stopPropagation();
-          onNav(1);
-        }}
+        onClick={(e) => { e.stopPropagation(); onNav(1); }}
       >
         <FiChevronRight size={22} />
       </button>
@@ -175,6 +174,8 @@ function Lightbox({
           src={photos[index].src}
           alt={photos[index].alt}
           fill
+          placeholder="blur"
+          blurDataURL={photos[index].blurDataURL}
           sizes="100vw"
           className="object-contain"
           priority

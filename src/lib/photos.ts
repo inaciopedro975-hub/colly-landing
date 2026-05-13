@@ -1,11 +1,14 @@
 // 27 fotos otimizadas em /public/galeria/foto-01.webp..foto-27.webp
+import { blurData } from "./blurData";
+
 export const TOTAL_PHOTOS = 27;
 
 export const photos = Array.from({ length: TOTAL_PHOTOS }, (_, i) => {
   const slug = `foto-${String(i + 1).padStart(2, "0")}`;
+  const key = `foto_${String(i + 1).padStart(2, "0")}`;
   return {
     src: `/galeria/${slug}.webp`,
-    blur: `/galeria/${slug}-blur.webp`,
+    blurDataURL: blurData[key] ?? "",
     alt: `Colly Eventos - ambiente ${i + 1}`,
   };
 });
