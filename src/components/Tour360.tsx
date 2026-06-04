@@ -94,7 +94,7 @@ export default function Tour360() {
             <motion.div
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2.5, repeat: Infinity }}
-              className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-ink/60 backdrop-blur-md text-white/90 text-xs tracking-wide"
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-ink/75 text-white/90 text-xs tracking-wide"
             >
               <FiMove size={14} />
               Arraste para explorar
@@ -108,14 +108,14 @@ export default function Tour360() {
                   (v) => (v - 1 + TOUR_360_PHOTOS.length) % TOUR_360_PHOTOS.length
                 )
               }
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-primary transition flex items-center justify-center"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-ink/45 text-white hover:bg-primary transition-colors flex items-center justify-center"
             >
               <FiChevronLeft size={20} />
             </button>
             <button
               aria-label="Próxima"
               onClick={() => setActive((v) => (v + 1) % TOUR_360_PHOTOS.length)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-primary transition flex items-center justify-center"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-ink/45 text-white hover:bg-primary transition-colors flex items-center justify-center"
             >
               <FiChevronRight size={20} />
             </button>

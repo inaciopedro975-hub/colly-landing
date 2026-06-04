@@ -31,7 +31,7 @@ export default function Header() {
       transition={{ duration: 0.8, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-[0_2px_24px_rgba(212,130,38,0.08)]"
+          ? "bg-white/95 shadow-[0_2px_24px_rgba(212,130,38,0.08)]"
           : "bg-transparent"
       }`}
     >

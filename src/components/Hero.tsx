@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { photos } from "@/lib/photos";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 // Fotos do slideshow — as mais impactantes do espaço
 const SLIDES = [
@@ -18,13 +19,17 @@ const INTERVAL = 5500;
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
+  const isMobile = useIsMobile();
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const overlayOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 0.5]);
-  const yContent = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const overlayOpacityRaw = useTransform(scrollYProgress, [0, 0.6], [0, 0.5]);
+  const yContentRaw = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const contentOpacityRaw = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  // No mobile, desliga o parallax/scroll-driven (scroll nativo fica mais fluido)
+  const yContent = isMobile ? undefined : yContentRaw;
+  const contentOpacity = isMobile ? undefined : contentOpacityRaw;
 
   const go = (idx: number) => {
     setDirection(idx > current ? 1 : -1);
@@ -51,16 +56,16 @@ export default function Hero() {
           key={current}
           custom={direction}
           variants={{
-            enter: (d: number) => ({ opacity: 0, scale: d > 0 ? 1.04 : 1.04, x: 0 }),
-            center: { opacity: 1, scale: 1.08, x: 0 },
-            exit: (d: number) => ({ opacity: 0, scale: d > 0 ? 1.12 : 1.0, x: 0 }),
+            enter: { opacity: 0, scale: isMobile ? 1 : 1.04, x: 0 },
+            center: { opacity: 1, scale: isMobile ? 1 : 1.08, x: 0 },
+            exit: { opacity: 0, scale: isMobile ? 1 : 1.12, x: 0 },
           }}
           initial="enter"
           animate="center"
           exit="exit"
           transition={{
             opacity: { duration: 1.6, ease: "easeInOut" },
-            scale: { duration: 8, ease: "linear" },
+            scale: { duration: isMobile ? 0 : 8, ease: "linear" },
           }}
           className="absolute inset-0"
         >
@@ -81,11 +86,13 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-ink/50 via-ink/10 to-ink/80 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-r from-ink/30 to-transparent pointer-events-none" />
 
-      {/* Scroll darkening */}
-      <motion.div
-        style={{ opacity: overlayOpacity }}
-        className="absolute inset-0 bg-ink pointer-events-none"
-      />
+      {/* Scroll darkening (desktop apenas) */}
+      {!isMobile && (
+        <motion.div
+          style={{ opacity: overlayOpacityRaw }}
+          className="absolute inset-0 bg-ink pointer-events-none"
+        />
+      )}
 
       {/* Conteúdo principal */}
       <motion.div
@@ -142,7 +149,7 @@ export default function Hero() {
           </a>
           <a
             href="#tour"
-            className="px-8 py-4 border border-white/40 rounded-full text-white font-medium tracking-wide hover:bg-white/10 backdrop-blur-sm transition-all"
+            className="px-8 py-4 border border-white/40 rounded-full text-white font-medium tracking-wide hover:bg-white/10 transition-colors"
           >
             Fazer Tour 360º
           </a>
