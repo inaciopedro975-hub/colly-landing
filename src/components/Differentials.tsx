@@ -34,7 +34,7 @@ const ITEMS = [
   },
   {
     numeral: "V",
-    title: "Capacidade até 400 convidados",
+    title: "Capacidade até 200 convidados",
     text: "Estrutura modular que abraça desde celebrações intimistas até festas grandiosas, sem perder a atmosfera acolhedora.",
     photo: photos[12],
   },
