@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FiMenu, FiX } from "react-icons/fi";
 
 const NAV = [
-  { href: "#tour", label: "Tour 360º" },
+  { href: "#tour", label: "O Espaço" },
   { href: "#galeria", label: "Galeria" },
   { href: "#diferenciais", label: "Diferenciais" },
   { href: "#fundadora", label: "Idealizadora" },

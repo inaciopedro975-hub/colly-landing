@@ -32,7 +32,7 @@ export default function Footer() {
           <ul className="mt-5 space-y-3 text-white/70">
             <li>
               <a href="#tour" className="hover:text-primary-light transition">
-                Tour 360º
+                O Espaço
               </a>
             </li>
             <li>
@@ -90,12 +90,12 @@ export default function Footer() {
             <li className="flex items-center gap-3">
               <FiPhone className="text-primary-light" size={16} />
               <a
-                href="https://api.whatsapp.com/send?phone=5519996729770&text=Ol%C3%A1%20Colly,%20quero%20agendar%20uma%20reuni%C3%A3o%20para%20falar%20sobre%20o%20meu%20evento."
+                href="https://api.whatsapp.com/send?phone=5519993598549&text=Ol%C3%A1%20Colly,%20quero%20agendar%20uma%20reuni%C3%A3o%20para%20falar%20sobre%20o%20meu%20evento."
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-primary-light"
               >
-                (19) 99672-9770
+                (19) 99359-8549
               </a>
             </li>
             <li className="flex items-center gap-3">

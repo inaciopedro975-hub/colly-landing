@@ -34,9 +34,9 @@ export default function Tour360() {
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
         <SectionHeading
-          eyebrow="Tour Imersivo"
+          eyebrow="Nossos Ambientes"
           title="Caminhe pelo nosso espaço"
-          subtitle="Uma experiência 360º para você sentir cada detalhe — antes mesmo da visita presencial."
+          subtitle="Um passeio pelos nossos ambientes para você sentir cada detalhe — antes mesmo da visita presencial."
         />
 
         <motion.div

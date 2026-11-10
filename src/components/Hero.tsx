@@ -139,7 +139,7 @@ export default function Hero() {
           className="mt-12 flex flex-col sm:flex-row gap-4 items-center pointer-events-auto"
         >
           <a
-            href="https://api.whatsapp.com/send?phone=5519996729770&text=Ol%C3%A1%20Colly,%20quero%20agendar%20uma%20reuni%C3%A3o%20para%20falar%20sobre%20o%20meu%20evento."
+            href="https://api.whatsapp.com/send?phone=5519993598549&text=Ol%C3%A1%20Colly,%20quero%20agendar%20uma%20reuni%C3%A3o%20para%20falar%20sobre%20o%20meu%20evento."
             target="_blank"
             rel="noreferrer"
             className="group relative px-8 py-4 bg-primary rounded-full text-white font-semibold tracking-wide overflow-hidden hover:shadow-[0_18px_50px_rgba(212,130,38,0.55)] transition-all hover:-translate-y-0.5"
@@ -151,7 +151,7 @@ export default function Hero() {
             href="#tour"
             className="px-8 py-4 border border-white/40 rounded-full text-white font-medium tracking-wide hover:bg-white/10 transition-colors"
           >
-            Fazer Tour 360º
+            Conhecer o Espaço
           </a>
         </motion.div>
       </motion.div>

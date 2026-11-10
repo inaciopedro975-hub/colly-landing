@@ -45,7 +45,7 @@ export default function HomePage() {
               postalCode: "13904-060",
               addressCountry: "BR",
             },
-            telephone: "+55-19-99672-9770",
+            telephone: "+55-19-99359-8549",
             url: "https://collyeventos.com.br",
             image: "https://collyeventos.com.br/galeria/foto-01.webp",
             slogan: "Seu sonho, nosso evento.",

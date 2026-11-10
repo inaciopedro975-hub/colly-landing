@@ -6,7 +6,7 @@ import { FaWhatsapp } from "react-icons/fa";
 export default function WhatsAppFloat() {
   return (
     <motion.a
-      href="https://api.whatsapp.com/send?phone=5519996729770&text=Ol%C3%A1%20Colly,%20quero%20agendar%20uma%20reuni%C3%A3o%20para%20falar%20sobre%20o%20meu%20evento."
+      href="https://api.whatsapp.com/send?phone=5519993598549&text=Ol%C3%A1%20Colly,%20quero%20agendar%20uma%20reuni%C3%A3o%20para%20falar%20sobre%20o%20meu%20evento."
       target="_blank"
       rel="noreferrer"
       aria-label="Falar no WhatsApp"
